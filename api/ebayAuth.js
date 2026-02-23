@@ -4,8 +4,8 @@ const BASE_URL =
     ? "https://api.sandbox.ebay.com"
     : "https://api.ebay.com";
 
-const CLIENT_ID = process.env.EBAY_CLIENT_ID;
-const CLIENT_SECRET = process.env.EBAY_CLIENT_SECRET;
+const CLIENT_ID = (process.env.EBAY_CLIENT_ID || "").trim();
+const CLIENT_SECRET = (process.env.EBAY_CLIENT_SECRET || "").trim();
 const SCOPE =
   process.env.EBAY_SCOPE || "https://api.ebay.com/oauth/api_scope";
 
@@ -17,6 +17,9 @@ export async function getEbayAccessToken() {
 
   if (cachedToken && now < expiresAtMs - 60_000) {
     return cachedToken;
+  }
+    if (!CLIENT_ID || !CLIENT_SECRET) {
+    throw new Error("Missing EBAY_CLIENT_ID or EBAY_CLIENT_SECRET");
   }
 
   const basic = Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString("base64");
